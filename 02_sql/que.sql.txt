@@ -1,0 +1,140 @@
+-- Sample Sales Data SQL Practice (30 Queries)
+
+-- 1. View all customers
+SELECT * FROM customers;
+
+-- 2. View all orders
+SELECT * FROM orders;
+
+-- 3. Total customers
+SELECT COUNT(*) FROM customers;
+
+-- 4. Total orders
+SELECT COUNT(*) FROM orders;
+
+-- 5. Total revenue
+SELECT SUM(amount) FROM orders;
+
+-- 6. Average order value
+SELECT AVG(amount) FROM orders;
+
+-- 7. Highest order value
+SELECT MAX(amount) FROM orders;
+
+-- 8. Lowest order value
+SELECT MIN(amount) FROM orders;
+
+-- 9. Revenue per customer
+SELECT customer_id, SUM(amount)
+FROM orders
+GROUP BY customer_id;
+
+-- 10. Orders per month
+SELECT MONTH(order_date), COUNT(*)
+FROM orders
+GROUP BY MONTH(order_date);
+
+-- 11. Top 5 customers by spend
+SELECT customer_id, SUM(amount) AS total_spent
+FROM orders
+GROUP BY customer_id
+ORDER BY total_spent DESC
+LIMIT 5;
+
+-- 12. Orders greater than 500
+SELECT * FROM orders WHERE amount > 500;
+
+-- 13. Customers without orders
+SELECT * FROM customers
+WHERE customer_id NOT IN (SELECT customer_id FROM orders);
+
+-- 14. Join customers & orders
+SELECT c.name, o.amount
+FROM customers c
+JOIN orders o ON c.customer_id = o.customer_id;
+
+-- 15. Left join example
+SELECT c.name, o.amount
+FROM customers c
+LEFT JOIN orders o ON c.customer_id = o.customer_id;
+
+-- 16. Orders per product
+SELECT product_id, COUNT(*)
+FROM orders
+GROUP BY product_id;
+
+-- 17. Revenue per product
+SELECT product_id, SUM(amount)
+FROM orders
+GROUP BY product_id;
+
+-- 18. Recent 30 days orders
+SELECT * FROM orders
+WHERE order_date >= CURRENT_DATE - INTERVAL 30 DAY;
+
+-- 19. Customers from Mumbai
+SELECT * FROM customers WHERE city = 'Mumbai';
+
+-- 20. Orders above average
+SELECT * FROM orders
+WHERE amount > (SELECT AVG(amount) FROM orders);
+
+-- 21. Order category
+SELECT order_id,
+CASE
+ WHEN amount < 100 THEN 'Low'
+ WHEN amount BETWEEN 100 AND 500 THEN 'Medium'
+ ELSE 'High'
+END AS category
+FROM orders;
+
+-- 22. Monthly revenue
+SELECT MONTH(order_date), SUM(amount)
+FROM orders
+GROUP BY MONTH(order_date);
+
+-- 23. Rank customers by spending
+SELECT customer_id,
+SUM(amount),
+RANK() OVER (ORDER BY SUM(amount) DESC) AS rnk
+FROM orders
+GROUP BY customer_id;
+
+-- 24. First order date
+SELECT customer_id, MIN(order_date)
+FROM orders
+GROUP BY customer_id;
+
+-- 25. Last order date
+SELECT customer_id, MAX(order_date)
+FROM orders
+GROUP BY customer_id;
+
+-- 26. Orders with product name
+SELECT o.order_id, p.product_name
+FROM orders o
+JOIN products p ON o.product_id = p.product_id;
+
+-- 27. Revenue per city
+SELECT c.city, SUM(o.amount)
+FROM customers c
+JOIN orders o ON c.customer_id = o.customer_id
+GROUP BY c.city;
+
+-- 28. Orders with payment method
+SELECT o.order_id, p.payment_method
+FROM orders o
+JOIN payments p ON o.order_id = p.order_id;
+
+-- 29. Customers spending > 1000
+SELECT customer_id, SUM(amount)
+FROM orders
+GROUP BY customer_id
+HAVING SUM(amount) > 1000;
+
+-- 30. Top 3 products by revenue
+SELECT product_id, SUM(amount)
+FROM orders
+GROUP BY product_id
+ORDER BY SUM(amount) DESC
+LIMIT 3;
